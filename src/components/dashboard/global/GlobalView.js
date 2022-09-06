@@ -317,7 +317,7 @@ class GlobalView extends React.Component {
     this.graph = null;
     this.flrconn = [];
     this.num_floors=0;
-    this.pt = 0;
+    this.selectedRoute = 0;
     
     this.landMarks = [];
     this.polygons = [];
@@ -1840,8 +1840,8 @@ class GlobalView extends React.Component {
    * @author Anirudh Khammampati & Sai Kumar Reddy
    * @description Find shortest path between source and destination
    */
-  callwhile = (srcfloor, srcVal, m, n, dest_x, dest_y, single, canvasid,globalCoords = null,pt) => {
-    console.log(pt);
+  callwhile = (srcfloor, srcVal, m, n, dest_x, dest_y, single, canvasid,globalCoords = null,selectedRoute) => {
+    console.log(selectedRoute);
     var min = Number.MAX_VALUE;
     var minleave = [];
     var var_i;
@@ -1929,7 +1929,8 @@ class GlobalView extends React.Component {
         }
       }
       this.leaves.splice(var_i, 1);
-      if(this.pt==2){
+      //rectilinear movement for simplest path
+      if(this.selectedRoute==2){
       for (var j = minleave[0] - 1; j <= minleave[0] + 1; j++) {
         for (var k = minleave[1] - 1; k <= minleave[1] + 1; k++) {
           if (j >= 0 && j < m && k >= 0 && k < n && ((j == minleave[0])|| (k == minleave[1]))) {
@@ -2367,7 +2368,7 @@ class GlobalView extends React.Component {
     );
   }
 
-  specialcallwhile(srcfloor,srcvert,dstfloor,dstvert,refPoint,pt){
+  specialcallwhile(srcfloor,srcvert,dstfloor,dstvert,refPoint,selectedRoute){
     console.log("srcfloor,srcvert,dstfloor,dstvert",srcfloor,srcvert,dstfloor,dstvert,refPoint)
     var min = Number.MAX_VALUE;
     var minleave=null;
@@ -2420,9 +2421,9 @@ class GlobalView extends React.Component {
                 neighbour=true;
               }
             }
-            console.log(pt);
-            if(this.pt==1){
-            var dataind = 0;
+            console.log(selectedRoute);
+            if(this.selectedRoute==1){
+            var dataind = 0; //data element index
             for(var kk=0; kk<this.flrind.length;kk++){
                 if(String(this.flrind[kk][1]).localeCompare(String(j))==0){
                   dataind = kk;
@@ -2431,6 +2432,7 @@ class GlobalView extends React.Component {
             console.log(dataind);
             console.log(this.flrind[dataind]);
             console.log(flrData[this.flrind[dataind][0]].element.subType);
+            //making the path move towards lift for accesible path
             if(visited.get(j) == false && neighbour && (flrData[this.flrind[dataind][0]].element.subType==="lift"||dataind==0)){
               console.log(j);
               //console.log(minleave);
@@ -2458,15 +2460,7 @@ class GlobalView extends React.Component {
             
             }
           }else{
-            var dataind = 0;
-            for(var kk=0; kk<this.flrind.length;kk++){
-                if(String(this.flrind[kk][1]).localeCompare(String(j))==0){
-                  dataind = kk;
-                }
-            }
-            console.log(dataind);
-            console.log(this.flrind[dataind]);
-            console.log(flrData[this.flrind[dataind][0]].element.subType);
+          
             if(visited.get(j) == false && neighbour){
               console.log(j);
               //console.log(minleave);
@@ -2751,7 +2745,7 @@ class GlobalView extends React.Component {
                               () => {
                                 // this.mapReferencePoint()
                                 // this.handleLocalGlobal();
-                                this.pt=0;
+                                this.selectedRoute=0;
                                 this.setNavigation();
                               }
                             );
@@ -2773,7 +2767,7 @@ class GlobalView extends React.Component {
                     <button
                       className="btn btn-direction  mx-auto btn-block btn-default btn-lg font-weight-bold  h2"
                       onClick={() => {
-                        this.pt=0;
+                        this.selectedRoute=0;  //assigning selectedRoute variable to all buttons
                         this.setNavigation();
                       }}
                     >
@@ -2784,7 +2778,7 @@ class GlobalView extends React.Component {
                     <button
                       className="btn btn-direction  mx-auto btn-block btn-default btn-lg font-weight-bold  h2"
                       onClick={() => {
-                        this.pt=2;
+                        this.selectedRoute=2;
                         this.setNavigation();
                       }}
                     >
@@ -2796,7 +2790,7 @@ class GlobalView extends React.Component {
                     <button
                       className="btn btn-direction  mx-auto btn-block btn-default btn-lg font-weight-bold  h2"
                       onClick={() => {
-                        this.pt=1;
+                        this.selectedRoute=1;
                         this.setNavigation();
                       }}
                     >
@@ -2808,7 +2802,7 @@ class GlobalView extends React.Component {
                     <button
                       className="btn btn-direction  mx-auto btn-block btn-default btn-lg font-weight-bold  h2"
                       onClick={() => {
-                        this.pt=0;
+                        this.selectedRoute=0;
                         this.setNavigation();
                       }}
                     >
