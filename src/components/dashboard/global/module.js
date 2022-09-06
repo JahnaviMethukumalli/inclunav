@@ -375,6 +375,8 @@ export const findInstructions = (
   floor
 ) => {
   //length of refined and non refined paths
+  console.log(refinedPoints);
+  console.log(nonRefined);
   let nonRefinedPoints = JSON.parse(nonRefined);
   var nRefined = refinedPoints.length;
   var nNonRefined = nonRefinedPoints.length;
@@ -537,6 +539,7 @@ export const findInstructions = (
         height,
         word
       });
+      console.log(flagList);
       let step = parseInt(
         Math.round(
           0.6 * (flagList[currentRPoint + 1] - flagList[currentRPoint])
@@ -757,19 +760,20 @@ export const simplifyPath = (points, tolerance) => {
   };
   var arr = douglasPeucker(points, tolerance);
   // always have to push the very last point on so it doesn't get left off
+  console.log(arr);
   arr.push(points[points.length - 1]);
   for(let i=0;i<arr.length-3;i++){
-    var l1 = new Line(arr[i],arr[i+1]);
-    var l2 = new Line(arr[i+1],arr[i+2]);
-    var l3 = new Line(arr[i+2],arr[i+3]);
-    var dist = Math.sqrt((arr[i+1].x-arr[i+2].x)*(arr[i+1].x-arr[i+2].x) + (arr[i+1].y-arr[i+2].y)*(arr[i+1].y-arr[i+2].y));
-    if(dist<5){
+  //  var l1 = new Line(arr[i],arr[i+1]);
+    //var l2 = new Line(arr[i+1],arr[i+2]);
+   // var l3 = new Line(arr[i+2],arr[i+3]);
+   // var dist = Math.sqrt((arr[i+1].x-arr[i+2].x)*(arr[i+1].x-arr[i+2].x) + (arr[i+1].y-arr[i+2].y)*(arr[i+1].y-arr[i+2].y));
+   // if(dist<10){
       //find intersecting point of l1 and l3
-      var point = l1.intersectPoint(arr[i+2],arr[i+3]);
-      arr.splice(i+1,2,point);
-      console.log(point);
+    //   var point = l1.intersectPoint(arr[i+2],arr[i+3]);
+     // arr.splice(i+1,2,point);
+     // console.log(point);
       
-    }
+    //}
   }
   console.log(arr);
   return arr;

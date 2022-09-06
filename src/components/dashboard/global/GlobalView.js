@@ -119,8 +119,7 @@ class Graph {
   { 
           // great the corresponding adjacency list 
           // for the vertex 
-          var get_values = this.AdjList.get(i);
-
+          var get_values = this.AdjList.get(i);    
           var val = this.Adjweights.get(i); 
           var conc = ""; 
           var conc2 = ""; 
@@ -1841,7 +1840,8 @@ class GlobalView extends React.Component {
    * @author Anirudh Khammampati & Sai Kumar Reddy
    * @description Find shortest path between source and destination
    */
-  callwhile = (srcfloor, srcVal, m, n, dest_x, dest_y, single, canvasid,globalCoords = null) => {
+  callwhile = (srcfloor, srcVal, m, n, dest_x, dest_y, single, canvasid,globalCoords = null,pt) => {
+    console.log(pt);
     var min = Number.MAX_VALUE;
     var minleave = [];
     var var_i;
@@ -1929,20 +1929,17 @@ class GlobalView extends React.Component {
         }
       }
       this.leaves.splice(var_i, 1);
+      if(this.pt==2){
       for (var j = minleave[0] - 1; j <= minleave[0] + 1; j++) {
         for (var k = minleave[1] - 1; k <= minleave[1] + 1; k++) {
-          if (j >= 0 && j < m && k >= 0 && k < n) {
+          if (j >= 0 && j < m && k >= 0 && k < n && ((j == minleave[0])|| (k == minleave[1]))) {
             if (this.visited[j][k] == -1 && this.grids[j][k] == 1) {
               if (
                 this.minimumcost[j][k] >
-                this.minimumcost[minleave[0]][minleave[1]] +
-                  Math.sqrt((minleave[0]-j)*(minleave[0]-j)+(minleave[1]-k)*(minleave[1]-k))
-		//Math.abs(j-dest_x)+Math.abs(k-dest_y)
+                this.minimumcost[minleave[0]][minleave[1]] +Math.abs(j-dest_x)+Math.abs(k-dest_y)
               ) {
                 this.minimumcost[j][k] =
-                  this.minimumcost[minleave[0]][minleave[1]] +
-                  Math.sqrt((minleave[0]-j)*(minleave[0]-j)+(minleave[1]-k)*(minleave[1]-k));
-               //  +Math.abs(j-dest_x)+Math.abs(k-dest_y);
+                  this.minimumcost[minleave[0]][minleave[1]] +Math.abs(j-dest_x)+Math.abs(k-dest_y);
                 this.shortestpath[j][k] = this.shortestpath[minleave[0]][
                   minleave[1]
                 ].concat([[j, k]]);
@@ -1961,6 +1958,38 @@ class GlobalView extends React.Component {
         }
       }
     }
+  else{
+    for (var j = minleave[0] - 1; j <= minleave[0] + 1; j++) {
+      for (var k = minleave[1] - 1; k <= minleave[1] + 1; k++) {
+        if (j >= 0 && j < m && k >= 0 && k < n ) {
+          if (this.visited[j][k] == -1 && this.grids[j][k] == 1) {
+            if (
+              this.minimumcost[j][k] >
+              this.minimumcost[minleave[0]][minleave[1]] 
+                +Math.sqrt((minleave[0]-j)*(minleave[0]-j)+(minleave[1]-k)*(minleave[1]-k))
+            ) {
+              this.minimumcost[j][k] =
+                this.minimumcost[minleave[0]][minleave[1]]+
+                Math.sqrt((minleave[0]-j)*(minleave[0]-j)+(minleave[1]-k)*(minleave[1]-k));
+              this.shortestpath[j][k] = this.shortestpath[minleave[0]][
+                minleave[1]
+              ].concat([[j, k]]);
+              notthere = 1;
+              for (var p = 0; p < this.leaves.length; p++) {
+                if (this.leaves[p][0] == j && this.leaves[p][1] == k) {
+                  notthere = 0;
+                }
+              }
+              if (notthere == 1) {
+                this.leaves.push([j, k]);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  }
     if (single == true) {
     let sp = this.shortestpath[dest_x][dest_y];
     console.log(sp);
@@ -1978,7 +2007,7 @@ class GlobalView extends React.Component {
       // this.props.globalNavigation(
         // { venueName: selectedVenue, buildingName: this.state.dstData.buildingName },
         // () => {
-          this.callGlobal(sp1,srcfloor,globalCoords);
+          this.callGlobal(sp,srcfloor,globalCoords);
           // this.fltrNvgnData(floor)
         // }
       // );
@@ -2402,7 +2431,7 @@ class GlobalView extends React.Component {
             console.log(dataind);
             console.log(this.flrind[dataind]);
             console.log(flrData[this.flrind[dataind][0]].element.subType);
-            if(visited.get(j) == false && neighbour && flrData[this.flrind[dataind][0]].element.subType==="lift"){
+            if(visited.get(j) == false && neighbour && (flrData[this.flrind[dataind][0]].element.subType==="lift"||dataind==0)){
               console.log(j);
               //console.log(minleave);
               if(minimumcost.get(j) > minimumcost.get(minleave) + get_dist[jj] ){
@@ -2429,7 +2458,15 @@ class GlobalView extends React.Component {
             
             }
           }else{
-
+            var dataind = 0;
+            for(var kk=0; kk<this.flrind.length;kk++){
+                if(String(this.flrind[kk][1]).localeCompare(String(j))==0){
+                  dataind = kk;
+                }
+            }
+            console.log(dataind);
+            console.log(this.flrind[dataind]);
+            console.log(flrData[this.flrind[dataind][0]].element.subType);
             if(visited.get(j) == false && neighbour){
               console.log(j);
               //console.log(minleave);
@@ -2747,7 +2784,7 @@ class GlobalView extends React.Component {
                     <button
                       className="btn btn-direction  mx-auto btn-block btn-default btn-lg font-weight-bold  h2"
                       onClick={() => {
-                        this.pt=0;
+                        this.pt=2;
                         this.setNavigation();
                       }}
                     >
@@ -2771,7 +2808,7 @@ class GlobalView extends React.Component {
                     <button
                       className="btn btn-direction  mx-auto btn-block btn-default btn-lg font-weight-bold  h2"
                       onClick={() => {
-                        this.pt=1;
+                        this.pt=0;
                         this.setNavigation();
                       }}
                     >
